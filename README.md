@@ -1,4 +1,4 @@
-# miseen
+# mise en package
 [![npm version](https://badge.fury.io/js/miseen.svg)](https://badge.fury.io/js/miseen)
 
 A node library to create folders using config files only

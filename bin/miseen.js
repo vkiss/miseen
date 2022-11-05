@@ -2,40 +2,64 @@
 
 const { cosmiconfig } = require( "cosmiconfig" );
 const chalk = require( "chalk" );
+
+// imports: lib
 const miseen = require( "../lib" );
+const displayError = require( "../lib/helpers/displayError" );
 
 const { info } = console;
 
 /**
 * HELPERS
 */
+/**
+ * @param {unknown} action
+ * @param {string} actionName
+ * @return {{ default: string | string[] } | { [key: string]: string | string[] } | null}
+ */
+const validateAction = ( action, actionName ) => {
+  let actionObject = {};
 
-const displayError = ( title ) => {
-  info( chalk.red( "*" ), chalk.bold.red( title ) );
+  if ( Array.isArray( action ) ) {
+    actionObject = {
+      default: action
+    };
+  } else if ( typeof action === "string" ) {
+    actionObject = {
+      default: [action]
+    };
+  } else if ( typeof action === "object" ) {
+    const isInvalidMkdirCollection = Object.keys( action ).map( ( key ) => typeof action[key] === "string" || Array.isArray( action[key] ) ).includes( false );
+    if ( isInvalidMkdirCollection ) {
+      displayError( actionName + " is invalid" );
+    } else {
+      actionObject = action;
+    }
+  } else {
+    displayError( actionName + " is invalid" );
+  }
+
+  if ( Object.keys( actionObject ).length === 0 ) return null;
+
+  return actionObject;
 };
 
+/**
+ * @param {{
+ *  chmod?: unknown,
+ *  mkdir?: unknown,
+ * }} config
+ * @return {*}
+ */
 const getConfig = ( config ) => {
   let validConfig = {};
 
+  if ( config.chmod ) {
+    validConfig.chmod = validateAction( config.chmod, "config.chmod" );
+  }
+
   if ( config.mkdir ) {
-    if ( Array.isArray( config.mkdir ) ) {
-      validConfig.mkdir = {
-        default: config.mkdir
-      };
-    } else if ( typeof config.mkdir === "string" ) {
-      validConfig.mkdir = {
-        default: [config.mkdir]
-      };
-    } else if ( typeof config.mkdir === "object" ) {
-      const isInvalidMkdirCollection = Object.keys( config.mkdir ).map( ( key ) => typeof config.mkdir[key] === "string" || Array.isArray( config.mkdir[key] ) ).includes( false );
-      if ( isInvalidMkdirCollection ) {
-        displayError( "miseen.mkdir is invalid" );
-      } else {
-        validConfig.mkdir = config.mkdir;
-      }
-    } else {
-      displayError( "miseen.mkdir is invalid" );
-    }
+    validConfig.mkdir = validateAction( config.mkdir, "config.mkdir" );
   }
 
   return validConfig;
