@@ -1,6 +1,6 @@
 {
   "name": "miseen",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "license": "MIT",
   "repository": {
@@ -18,8 +18,11 @@
     "lint": "eslint **/*.js"
   },
   "keywords": [
-    "mkdir",
+    "chmod",
+    "file",
     "folder",
+    "mkdir",
+    "permission",
     "prepare",
     "postinstall"
   ],
